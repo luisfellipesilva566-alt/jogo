@@ -1,0 +1,575 @@
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Troque pelo seu nome -->
+    <title>Caça às Moedas - Luís Fellipe</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #111827, #1e3a8a);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .tela {
+            text-align: center;
+            width: 100%;
+            max-width: 850px;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 42px;
+            margin-bottom: 15px;
+            color: #facc15;
+        }
+
+        h2 {
+            margin-bottom: 15px;
+        }
+
+        p {
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+
+        button {
+            border: none;
+            border-radius: 12px;
+            padding: 14px 25px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            background: #facc15;
+            color: #111827;
+            margin: 8px;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+
+        #menu,
+        #fim,
+        #criador {
+            background: rgba(0, 0, 0, 0.35);
+            border-radius: 20px;
+            padding: 35px;
+        }
+
+        #jogo {
+            display: none;
+        }
+
+        #placar {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 10px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        #areaJogo {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            height: 450px;
+            margin: auto;
+            background: #166534;
+            border: 5px solid #facc15;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        #jogador {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: #3b82f6;
+            border-radius: 50%;
+            border: 3px solid white;
+        }
+
+        .moeda {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            background: #facc15;
+            border-radius: 50%;
+            border: 3px solid #ca8a04;
+        }
+
+        .obstaculo {
+            position: absolute;
+            width: 45px;
+            height: 45px;
+            background: #dc2626;
+            border-radius: 8px;
+        }
+
+        #controles {
+            margin-top: 15px;
+        }
+
+        .controle {
+            width: 55px;
+            height: 50px;
+            padding: 5px;
+            margin: 3px;
+            font-size: 22px;
+            background: #60a5fa;
+        }
+
+        .linha {
+            display: flex;
+            justify-content: center;
+        }
+
+        #criador {
+            display: none;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 30px;
+            }
+
+            #areaJogo {
+                height: 380px;
+            }
+
+            #placar {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="tela">
+
+    <!-- TELA INICIAL -->
+    <section id="menu">
+        <h1>🪙 Caça às Moedas</h1>
+
+        <p>
+            Pegue as moedas, faça 100 pontos e vença o jogo!
+        </p>
+
+        <p>
+            💻 PC: use as setas do teclado ou WASD.
+        </p>
+
+        <p>
+            📱 Celular: use os botões na tela.
+        </p>
+
+        <p>
+            🪙 Cada moeda vale 10 pontos.<br>
+            ❤️ Você possui 3 vidas.
+        </p>
+
+        <button onclick="iniciarJogo()">🎮 Jogar</button>
+
+        <button onclick="mostrarCriador()">👨‍💻 Criador do jogo</button>
+
+        <div id="criador">
+            <h2>👨‍💻 Criador do jogo</h2>
+            <p>Desenvolvido por: Luís Fellipe</p>
+            <p>2º ano EMTI</p>
+            <button onclick="fecharCriador()">Voltar</button>
+        </div>
+    </section>
+
+
+    <!-- JOGO -->
+    <section id="jogo">
+
+        <div id="placar">
+            <span>⭐ Pontos: <span id="pontos">0</span></span>
+            <span>❤️ Vidas: <span id="vidas">3</span></span>
+        </div>
+
+        <div id="areaJogo">
+
+            <div id="jogador"></div>
+
+            <div class="moeda" id="moeda"></div>
+
+            <div class="obstaculo" id="obstaculo1"></div>
+
+            <div class="obstaculo" id="obstaculo2"></div>
+
+        </div>
+
+        <!-- CONTROLES PARA CELULAR -->
+        <div id="controles">
+
+            <div class="linha">
+                <button class="controle" onclick="mover('cima')">⬆️</button>
+            </div>
+
+            <div class="linha">
+                <button class="controle" onclick="mover('esquerda')">⬅️</button>
+
+                <button class="controle" onclick="mover('baixo')">⬇️</button>
+
+                <button class="controle" onclick="mover('direita')">➡️</button>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- TELA FINAL -->
+    <section id="fim">
+
+        <h1 id="tituloFim">Fim de jogo!</h1>
+
+        <h2>
+            Pontuação: <span id="pontuacaoFinal">0</span>
+        </h2>
+
+        <p id="mensagemFinal"></p>
+
+        <button onclick="jogarNovamente()">
+            🔄 Jogar novamente
+        </button>
+
+        <button onclick="voltarMenu()">
+            🏠 Menu
+        </button>
+
+    </section>
+
+</div>
+
+
+<script>
+
+    // VARIÁVEIS DO JOGO
+
+    let pontos = 0;
+    let vidas = 3;
+
+    let jogadorX = 50;
+    let jogadorY = 50;
+
+    let jogoAtivo = false;
+
+    const jogador = document.getElementById("jogador");
+    const moeda = document.getElementById("moeda");
+
+    const obstaculo1 = document.getElementById("obstaculo1");
+    const obstaculo2 = document.getElementById("obstaculo2");
+
+    const areaJogo = document.getElementById("areaJogo");
+
+
+    // INICIAR JOGO
+
+    function iniciarJogo() {
+
+        document.getElementById("menu").style.display = "none";
+        document.getElementById("fim").style.display = "none";
+        document.getElementById("jogo").style.display = "block";
+
+        pontos = 0;
+        vidas = 3;
+
+        jogadorX = 50;
+        jogadorY = 50;
+
+        jogoAtivo = true;
+
+        atualizarPlacar();
+        posicionarObjetos();
+
+    }
+
+
+    // POSICIONAR ELEMENTOS
+
+    function posicionarObjetos() {
+
+        jogador.style.left = jogadorX + "px";
+        jogador.style.top = jogadorY + "px";
+
+        moverMoeda();
+
+        obstaculo1.style.left = "250px";
+        obstaculo1.style.top = "150px";
+
+        obstaculo2.style.left = "500px";
+        obstaculo2.style.top = "300px";
+    }
+
+
+    // MOVIMENTAÇÃO
+
+    function mover(direcao) {
+
+        if (!jogoAtivo) return;
+
+        const limiteX = areaJogo.clientWidth - jogador.offsetWidth;
+        const limiteY = areaJogo.clientHeight - jogador.offsetHeight;
+
+        const velocidade = 15;
+
+        if (direcao === "cima") {
+            jogadorY -= velocidade;
+        }
+
+        if (direcao === "baixo") {
+            jogadorY += velocidade;
+        }
+
+        if (direcao === "esquerda") {
+            jogadorX -= velocidade;
+        }
+
+        if (direcao === "direita") {
+            jogadorX += velocidade;
+        }
+
+        // Impede sair da tela
+
+        jogadorX = Math.max(0, Math.min(jogadorX, limiteX));
+        jogadorY = Math.max(0, Math.min(jogadorY, limiteY));
+
+        jogador.style.left = jogadorX + "px";
+        jogador.style.top = jogadorY + "px";
+
+        verificarColisoes();
+    }
+
+
+    // CONTROLE DO TECLADO
+
+    document.addEventListener("keydown", function(event) {
+
+        if (event.key === "ArrowUp" || event.key.toLowerCase() === "w") {
+            mover("cima");
+        }
+
+        if (event.key === "ArrowDown" || event.key.toLowerCase() === "s") {
+            mover("baixo");
+        }
+
+        if (event.key === "ArrowLeft" || event.key.toLowerCase() === "a") {
+            mover("esquerda");
+        }
+
+        if (event.key === "ArrowRight" || event.key.toLowerCase() === "d") {
+            mover("direita");
+        }
+
+    });
+
+
+    // MOEDA ALEATÓRIA
+
+    function moverMoeda() {
+
+        const maxX = areaJogo.clientWidth - moeda.offsetWidth;
+        const maxY = areaJogo.clientHeight - moeda.offsetHeight;
+
+        let x = Math.random() * maxX;
+        let y = Math.random() * maxY;
+
+        moeda.style.left = x + "px";
+        moeda.style.top = y + "px";
+
+    }
+
+
+    // COLISÃO
+
+    function verificarColisoes() {
+
+        if (colidiu(jogador, moeda)) {
+
+            pontos += 10;
+
+            atualizarPlacar();
+
+            moverMoeda();
+
+            if (pontos >= 100) {
+                finalizarJogo(true);
+                return;
+            }
+        }
+
+
+        if (colidiu(jogador, obstaculo1)) {
+
+            perderVida();
+
+            jogadorX = 50;
+            jogadorY = 50;
+
+            atualizarJogador();
+
+        }
+
+
+        if (colidiu(jogador, obstaculo2)) {
+
+            perderVida();
+
+            jogadorX = 50;
+            jogadorY = 50;
+
+            atualizarJogador();
+
+        }
+
+    }
+
+
+    // DETECTAR COLISÃO
+
+    function colidiu(elemento1, elemento2) {
+
+        const a = elemento1.getBoundingClientRect();
+        const b = elemento2.getBoundingClientRect();
+
+        return !(
+            a.right < b.left ||
+            a.left > b.right ||
+            a.bottom < b.top ||
+            a.top > b.bottom
+        );
+
+    }
+
+
+    // PERDER VIDA
+
+    function perderVida() {
+
+        vidas--;
+
+        atualizarPlacar();
+
+        if (vidas <= 0) {
+            finalizarJogo(false);
+        }
+
+    }
+
+
+    // ATUALIZAR JOGADOR
+
+    function atualizarJogador() {
+
+        jogador.style.left = jogadorX + "px";
+        jogador.style.top = jogadorY + "px";
+
+    }
+
+
+    // ATUALIZAR PLACAR
+
+    function atualizarPlacar() {
+
+        document.getElementById("pontos").textContent = pontos;
+
+        document.getElementById("vidas").textContent = vidas;
+
+    }
+
+
+    // FINALIZAR
+
+    function finalizarJogo(vitoria) {
+
+        jogoAtivo = false;
+
+        document.getElementById("jogo").style.display = "none";
+
+        document.getElementById("fim").style.display = "block";
+
+        document.getElementById("pontuacaoFinal").textContent = pontos;
+
+        if (vitoria) {
+
+            document.getElementById("tituloFim").textContent = "🏆 Você venceu!";
+
+            document.getElementById("mensagemFinal").textContent =
+                "Parabéns! Você conseguiu 100 pontos!";
+
+        } else {
+
+            document.getElementById("tituloFim").textContent = "💥 Você perdeu!";
+
+            document.getElementById("mensagemFinal").textContent =
+                "Suas vidas acabaram. Tente novamente!";
+
+        }
+
+    }
+
+
+    // JOGAR NOVAMENTE
+
+    function jogarNovamente() {
+
+        iniciarJogo();
+
+    }
+
+
+    // VOLTAR AO MENU
+
+    function voltarMenu() {
+
+        jogoAtivo = false;
+
+        document.getElementById("fim").style.display = "none";
+
+        document.getElementById("jogo").style.display = "none";
+
+        document.getElementById("menu").style.display = "block";
+
+    }
+
+
+    // CRIADOR
+
+    function mostrarCriador() {
+
+        document.getElementById("criador").style.display = "block";
+
+    }
+
+
+    function fecharCriador() {
+
+        document.getElementById("criador").style.display = "none";
+
+    }
+
+</script>
+
+</body>
+</html>
+```
